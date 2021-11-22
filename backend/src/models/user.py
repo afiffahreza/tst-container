@@ -8,8 +8,6 @@ class UserTable(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(30), nullable=False)
     hashed_password = Column(String(255), nullable=False)
-    email = Column(String(30), nullable=False)
-    name = Column(String(30), nullable=False)
     disabled = Column(Boolean)
     
 

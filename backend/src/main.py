@@ -40,7 +40,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def get_user(username: str):
+def get_user(db, username: str):
     user = session.query(UserTable).\
         filter(UserTable.username == username).first()
     if user:
@@ -117,8 +117,6 @@ async def register(user: UserCreate):
     newUser = user.dict()
     userData = UserTable()
     userData.username = newUser['username']
-    userData.name = newUser['name']
-    userData.email = newUser['email']
     userData.hashed_password = get_password_hash(newUser['password'])
     userData.disabled = 0
     session.add(userData)
@@ -133,27 +131,3 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     userme = session.query(UserTable).\
         filter(UserTable.username == current_user.username).first()
     return userme
-
-
-@app.get("/users")
-async def read_users(current_user: User = Depends(get_current_active_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    users = session.query(UserTable).all()
-    return users
-
-@app.get("/users/id/{user_id}")
-async def read_user_by_id(user_id: int, current_user: User = Depends(get_current_active_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    user = session.query(UserTable).\
-        filter(UserTable.id == user_id).first()
-    return user
-
-@app.get("/users/{username}")
-async def read_user_by_username(username: str, current_user: User = Depends(get_current_active_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    user = session.query(UserTable).\
-        filter(UserTable.username == username).first()
-    return user
