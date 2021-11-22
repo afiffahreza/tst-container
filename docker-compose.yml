@@ -50,18 +50,6 @@ services:
     networks:
       - local-net
 
-  # phpMyAdmin
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: "phpmyadmin"
-    restart: always
-    environment:
-      PMA_HOST: mysql-server
-      PMA_USER: root
-      PMA_PASSWORD: secret
-    ports:
-      - 8080:80
-
 networks:
   local-net:
     driver: bridge
