@@ -4,7 +4,7 @@ services:
   # MySQL
   db:
     container_name: "db"
-    build: ./docker/mysql
+    build: ./backend/mysql
     restart: always
     tty: true
     environment:
@@ -15,10 +15,10 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./docker/mysql/initdb.d/schema.sql:/docker-entrypoint-initdb.d/1.sql
-      - ./docker/mysql/initdb.d/testdata.sql:/docker-entrypoint-initdb.d/2.sql
-      - ./docker/mysql/conf.d:/etc/mysql/conf.db
-      - ./log/mysql:/var/log/mysql
+      - ./backend/mysql/initdb.d/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./backend/mysql/initdb.d/testdata.sql:/docker-entrypoint-initdb.d/2.sql
+      - ./backend/mysql/conf.d:/etc/mysql/conf.db
+      - ./backend/log/mysql:/var/log/mysql
     networks:
       - local-net
 
@@ -29,13 +29,38 @@ services:
     depends_on:
       - db
     container_name: "api"
-    build: ./docker/api
+    build: ./backend/api
     ports:
       - "8000:8000"
     volumes:
-      - ./src:/usr/src/server
+      - ./backend/src:/usr/src/server
     networks:
       - local-net
+  
+  # React
+  app:
+    links:
+      - api
+    depends_on:
+      - api
+    container_name: "app"
+    build: ./frontend
+    ports:
+      - "3000:80"
+    networks:
+      - local-net
+
+  # phpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: "phpmyadmin"
+    restart: always
+    environment:
+      PMA_HOST: mysql-server
+      PMA_USER: root
+      PMA_PASSWORD: secret
+    ports:
+      - 8080:80
 
 networks:
   local-net:

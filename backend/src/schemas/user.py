@@ -12,8 +12,6 @@ class TokenData(BaseModel):  # Token class
 
 class User(BaseModel):  # User Auth
     username: str
-    email: Optional[str] = None
-    name: Optional[str] = None
     disabled: Optional[bool] = None
 
 
